@@ -3,12 +3,19 @@
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 
 int calculate_brightness(int, int, int); // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
+int calculate_symbol_index(int); // This is another function decleration
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
 {
     int brightness = ((30 * red_value)+(59 * green_value)+(11 * blue_value)) / 100; // This is the formula I leanrt to calculate the brightness
     return brightness;
+}
+
+// I am making this function to calculate the index value with the help of which , we will be deciding which symbol to use at any particular brightness
+int calculate_symbol_index(int brightness){
+    int symbol_index_value = (brightness * 10) / 256; // This formula ensures that the brightness value stayes int he range of 0 to 9 , as we have use only 10 chars ranging from index 0 to 9
+    return symbol_index_value;
 }
 
 int main()
@@ -18,6 +25,8 @@ int main()
     int original_height;
     int original_channel;
     int required_channel = 3;
+
+    const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
     unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
 
@@ -48,9 +57,17 @@ int main()
             unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
             unsigned char green_value = image[pixel_index + 1];
             unsigned char blue_value = image[pixel_index + 2];
+
             int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
-            printf("Brightness : %d \n",brightness_returned);
+            // printf("Brightness : %d \n",brightness_returned); I printed it only for checking 
+
+            int symbol_index_value = calculate_symbol_index(brightness_returned);
+
+            // printf("Symbol_index_value = %d\n",symbol_index_value); 
+
+            printf("%c",ascii_symbols[symbol_index_value]);
         }
+        printf("\n");
     }
     return 0;
 }
