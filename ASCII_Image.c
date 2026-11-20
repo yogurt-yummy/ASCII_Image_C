@@ -2,6 +2,15 @@
 #include "stb_image.h"           // Including the header file we downloaded
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 
+int calculate_brightness(int, int, int); // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
+
+// The below is function definition . Here I write the actual code of the function , like what it does and stuff
+int calculate_brightness(int red_value, int green_value, int blue_value)
+{
+    int brightness = ((30 * red_value)+(59 * green_value)+(11 * blue_value)) / 100; // This is the formula I leanrt to calculate the brightness
+    return brightness;
+}
+
 int main()
 {
     char image_name[] = "image.jpeg";
@@ -33,11 +42,15 @@ int main()
         for (original_column = 0; original_column < original_width; original_column++)
         {
             pixel_index = ((original_row * original_width) + original_column) * required_channel; // Here lemme explain the formula myself , so , here , row * width takes us to the current row and adding column will take us to the current position , and we multiple with required channel , which is 3 here represent the red , green and blue value of the particular pixl . so we are reading those 3 value of each pixel.
+
+            // printf("%d\t",pixel_index); If you try to print pixel index like i did , you will see that the difference in each index is 3 . and this is beacuase we take the pixel and skip 3 values of it as it would give rgb value of the same pixel
+
+            unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
+            unsigned char green_value = image[pixel_index + 1];
+            unsigned char blue_value = image[pixel_index + 2];
+            int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
+            printf("Brightness : %d \n",brightness_returned);
         }
     }
-    printf("Origina_row = %d.\n",original_row);
-    printf("Original_column = %d.\n",original_column);
-    printf("Width = %d.\n",original_width);
-    printf("Height = %d.\n",original_height);
     return 0;
 }
