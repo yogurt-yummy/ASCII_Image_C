@@ -3,11 +3,12 @@
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 #include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
 
-int calculate_brightness(int, int, int);   // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
-int calculate_symbol_index(int);           // This is another function decleration
-int greet_01(void);                        // I am declaring this funciton for instruction / greeting
-int greet_02(void);                        // I am declaring this function for instruction / greeting
-int check_image_validity(unsigned char *); // I am declaring this function for check if the image exist or not , or if its valid type or not
+int calculate_brightness(int, int, int);                                  // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
+int calculate_symbol_index(int);                                          // This is another function decleration
+int greet_01(void);                                                       // I am declaring this funciton for instruction / greeting
+int greet_02(void);                                                       // I am declaring this function for instruction / greeting
+int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
+void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -84,6 +85,41 @@ int check_image_validity(unsigned char *image)
     }
 }
 
+// I am making the function to convert the image to ascii art pixel by pixel , i learnt that this method is called per-pixel mapping
+
+void per_pixel_mapping(int original_height, int original_width, int required_channel, unsigned char *image, const char ascii_symbols[])
+{
+
+    // Now we calculate select the pixel position form the image
+    int pixel_index;
+    int original_row;
+    int original_column;
+
+    for (original_row = 0; original_row < original_height; original_row++) // Let me explain why we used < and not <= , this one was abit confusing to me but i got it now , so the width and heiht returned by the stbi_load function is the number of pixels , so they start from one , but while reading those pixels , we get array where indexing starts from 0 , thats why we use < and not <= . This applies to the loop below as well , i.e. original_column < original_width .
+    {
+        for (original_column = 0; original_column < original_width; original_column++)
+        {
+            pixel_index = ((original_row * original_width) + original_column) * required_channel; // Here lemme explain the formula myself , so , here , row * width takes us to the current row and adding column will take us to the current position , and we multiple with required channel , which is 3 here represent the red , green and blue value of the particular pixl . so we are reading those 3 value of each pixel.
+
+            // printf("%d\t",pixel_index); If you try to print pixel index like i did , you will see that the difference in each index is 3 . and this is beacuase we take the pixel and skip 3 values of it as it would give rgb value of the same pixel
+
+            unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
+            unsigned char green_value = image[pixel_index + 1];
+            unsigned char blue_value = image[pixel_index + 2];
+
+            int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
+            // printf("Brightness : %d \n",brightness_returned); I printed it only for checking
+
+            int symbol_index_value = calculate_symbol_index(brightness_returned);
+
+            // printf("Symbol_index_value = %d\n",symbol_index_value);
+
+            printf("%c", ascii_symbols[symbol_index_value]);
+        }
+        printf("\n");
+    }
+}
+
 int main()
 {
     char image_name[] = "image.jpeg";
@@ -124,37 +160,8 @@ int main()
     }
     else
     {
-        
     }
-
-    // Now we calculate select the pixel position form the image
-    int pixel_index;
-    int original_row;
-    int original_column;
-
-    // for (original_row = 0; original_row < original_height; original_row++) // Let me explain why we used < and not <= , this one was abit confusing to me but i got it now , so the width and heiht returned by the stbi_load function is the number of pixels , so they start from one , but while reading those pixels , we get array where indexing starts from 0 , thats why we use < and not <= . This applies to the loop below as well , i.e. original_column < original_width .
-    // {
-    //     for (original_column = 0; original_column < original_width; original_column++)
-    //     {
-    //         pixel_index = ((original_row * original_width) + original_column) * required_channel; // Here lemme explain the formula myself , so , here , row * width takes us to the current row and adding column will take us to the current position , and we multiple with required channel , which is 3 here represent the red , green and blue value of the particular pixl . so we are reading those 3 value of each pixel.
-
-    //         // printf("%d\t",pixel_index); If you try to print pixel index like i did , you will see that the difference in each index is 3 . and this is beacuase we take the pixel and skip 3 values of it as it would give rgb value of the same pixel
-
-    //         unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
-    //         unsigned char green_value = image[pixel_index + 1];
-    //         unsigned char blue_value = image[pixel_index + 2];
-
-    //         int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
-    //         // printf("Brightness : %d \n",brightness_returned); I printed it only for checking
-
-    //         int symbol_index_value = calculate_symbol_index(brightness_returned);
-
-    //         // printf("Symbol_index_value = %d\n",symbol_index_value);
-
-    //         printf("%c", ascii_symbols[symbol_index_value]);
-    //     }
-    //     printf("\n");
-    // }
+    per_pixel_mapping(original_height, original_width, required_channel, image, ascii_symbols);
     printf("\nProgram as reached its end.\n");
     return 0;
 }
