@@ -3,10 +3,11 @@
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 #include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
 
-int calculate_brightness(int, int, int); // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
-int calculate_symbol_index(int);         // This is another function decleration
-int greet_01(void);
-int greet_02(void);
+int calculate_brightness(int, int, int);   // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
+int calculate_symbol_index(int);           // This is another function decleration
+int greet_01(void);                        // I am declaring this funciton for instruction / greeting
+int greet_02(void);                        // I am declaring this function for instruction / greeting
+int check_image_validity(unsigned char *); // I am declaring this function for check if the image exist or not , or if its valid type or not
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -68,6 +69,19 @@ int greet_02(void)
     return user_key;
 }
 
+// I am making this function to check the validity of the image choosen by the user
+int check_image_validity(unsigned char *image)
+{
+    if (image == NULL)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
 int main()
 {
     char image_name[] = "image.jpeg";
@@ -79,37 +93,38 @@ int main()
 
     const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
-    while (user_key_returned != 27)
-    {
-        user_key_returned = greet_01();
-        if (user_key_returned == 10)
-        {
-            user_key_returned = greet_02();
-        }
-        else if (user_key_returned == 27)
-        {
-            break;
-        }
-        break;
+    // while (user_key_returned != 27)
+    // {
+    //     user_key_returned = greet_01();
+    //     if (user_key_returned == 10)
+    //     {
+    //         user_key_returned = greet_02();
+    //     }
+    //     else if (user_key_returned == 27)
+    //     {
+    //         break;
+    //     }
+    //     break;
+    // }
+
+    unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
+
+    // Now we check if the image is actually loaded or not
+    // If the image is not loaded for some reason , then stbi_load function will return NULL
+    // I have made a function called check_image_validity function for this job, so i will just check and check its return value
+
+    int image_validation_return_value = check_image_validity(image); // calling the function
+
+    if (image_validation_return_value == 1){
+        printf("Error loading image . Reason : %s ",stbi_failure_reason());
+    }else{
+        printf("Image was loaded successfully.\n");
     }
 
-    // unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
-
-    // // Now we check if the image is actually loaded or not
-    // // If the image is not loaded for some reason , then stbi_load function will return NULL
-    // if (image == NULL)
-    // {
-    //     printf("Error loading the image.%s\n", stbi_failure_reason()); // I leant that stbi_failure_reason() function tells us the reason of error
-    // }
-    // else
-    // {
-    //     printf("Image loaded successfully.\n");
-    // }
-
-    // // Now we calculate select the pixel position form the image
-    // int pixel_index;
-    // int original_row;
-    // int original_column;
+        // Now we calculate select the pixel position form the image
+        int pixel_index;
+    int original_row;
+    int original_column;
 
     // for (original_row = 0; original_row < original_height; original_row++) // Let me explain why we used < and not <= , this one was abit confusing to me but i got it now , so the width and heiht returned by the stbi_load function is the number of pixels , so they start from one , but while reading those pixels , we get array where indexing starts from 0 , thats why we use < and not <= . This applies to the loop below as well , i.e. original_column < original_width .
     // {
@@ -130,7 +145,7 @@ int main()
 
     //         // printf("Symbol_index_value = %d\n",symbol_index_value);
 
-    //         printf("%c",ascii_symbols[symbol_index_value]);
+    //         printf("%c", ascii_symbols[symbol_index_value]);
     //     }
     //     printf("\n");
     // }
