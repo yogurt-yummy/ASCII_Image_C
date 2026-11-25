@@ -1,21 +1,44 @@
 #define STB_IMAGE_IMPLEMENTATION // As I learnt , #define STB_IMAGE_IMPLEMENTATION is used to also include the implementation of the header file which is stb_image in our case. And Also it is written before including the header file beacuase it tells the header file to include its implementation . If we include it after #include "stb_image.h" we wont be able to activate the implementation section
 #include "stb_image.h"           // Including the header file we downloaded
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
+#include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
 
 int calculate_brightness(int, int, int); // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
-int calculate_symbol_index(int); // This is another function decleration
+int calculate_symbol_index(int);         // This is another function decleration
+int greet_01(void);
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
 {
-    int brightness = ((30 * red_value)+(59 * green_value)+(11 * blue_value)) / 100; // This is the formula I leanrt to calculate the brightness
+    int brightness = ((30 * red_value) + (59 * green_value) + (11 * blue_value)) / 100; // This is the formula I leanrt to calculate the brightness
     return brightness;
 }
 
 // I am making this function to calculate the index value with the help of which , we will be deciding which symbol to use at any particular brightness
-int calculate_symbol_index(int brightness){
+int calculate_symbol_index(int brightness)
+{
     int symbol_index_value = (brightness * 10) / 256; // This formula ensures that the brightness value stayes int he range of 0 to 9 , as we have use only 10 chars ranging from index 0 to 9
     return symbol_index_value;
+}
+
+int greet_01(void)
+{
+    
+    initscr(); // initscr function modifies the terminal making it ready for getch (and maybe other fucntions which the ncurses library might provide) through external library
+
+    printw("Hello!\n"); // This is abit annoying but the ncurses library uses printw function instead of printf , I tried using initilizing and endinf the its use only in getch , but the terminal output was getting abit weird and was recommended to use it this way. 
+    printw("\n");
+    printw("Press enter to continue...");
+    refresh();
+
+    int user_key = getch();
+    
+    endwin(); // endwin is a function from ncurses which just resets the terminal to its normal state
+    
+    // printf("You Pressed %d .\n", user_key);
+
+    return user_key;
+
 }
 
 int main()
@@ -28,46 +51,48 @@ int main()
 
     const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
-    unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
+    greet_01();
 
-    // Now we check if the image is actually loaded or not
-    // If the image is not loaded for some reason , then stbi_load function will return NULL
-    if (image == NULL)
-    {
-        printf("Error loading the image.%s\n", stbi_failure_reason()); // I leant that stbi_failure_reason() function tells us the reason of error
-    }
-    else
-    {
-        printf("Image loaded successfully.\n");
-    }
+    // unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
 
-    // Now we calculate select the pixel position form the image
-    int pixel_index;
-    int original_row;
-    int original_column;
+    // // Now we check if the image is actually loaded or not
+    // // If the image is not loaded for some reason , then stbi_load function will return NULL
+    // if (image == NULL)
+    // {
+    //     printf("Error loading the image.%s\n", stbi_failure_reason()); // I leant that stbi_failure_reason() function tells us the reason of error
+    // }
+    // else
+    // {
+    //     printf("Image loaded successfully.\n");
+    // }
 
-    for (original_row = 0; original_row < original_height; original_row++) // Let me explain why we used < and not <= , this one was abit confusing to me but i got it now , so the width and heiht returned by the stbi_load function is the number of pixels , so they start from one , but while reading those pixels , we get array where indexing starts from 0 , thats why we use < and not <= . This applies to the loop below as well , i.e. original_column < original_width .
-    {
-        for (original_column = 0; original_column < original_width; original_column++)
-        {
-            pixel_index = ((original_row * original_width) + original_column) * required_channel; // Here lemme explain the formula myself , so , here , row * width takes us to the current row and adding column will take us to the current position , and we multiple with required channel , which is 3 here represent the red , green and blue value of the particular pixl . so we are reading those 3 value of each pixel.
+    // // Now we calculate select the pixel position form the image
+    // int pixel_index;
+    // int original_row;
+    // int original_column;
 
-            // printf("%d\t",pixel_index); If you try to print pixel index like i did , you will see that the difference in each index is 3 . and this is beacuase we take the pixel and skip 3 values of it as it would give rgb value of the same pixel
+    // for (original_row = 0; original_row < original_height; original_row++) // Let me explain why we used < and not <= , this one was abit confusing to me but i got it now , so the width and heiht returned by the stbi_load function is the number of pixels , so they start from one , but while reading those pixels , we get array where indexing starts from 0 , thats why we use < and not <= . This applies to the loop below as well , i.e. original_column < original_width .
+    // {
+    //     for (original_column = 0; original_column < original_width; original_column++)
+    //     {
+    //         pixel_index = ((original_row * original_width) + original_column) * required_channel; // Here lemme explain the formula myself , so , here , row * width takes us to the current row and adding column will take us to the current position , and we multiple with required channel , which is 3 here represent the red , green and blue value of the particular pixl . so we are reading those 3 value of each pixel.
 
-            unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
-            unsigned char green_value = image[pixel_index + 1];
-            unsigned char blue_value = image[pixel_index + 2];
+    //         // printf("%d\t",pixel_index); If you try to print pixel index like i did , you will see that the difference in each index is 3 . and this is beacuase we take the pixel and skip 3 values of it as it would give rgb value of the same pixel
 
-            int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
-            // printf("Brightness : %d \n",brightness_returned); I printed it only for checking 
+    //         unsigned char red_value = image[pixel_index]; // we use unsigned char here because the rgb value of the pixel is exactly ranging from 0 to 255 , and the unsigned char stores exactly upto 255 . So , its like made for this.
+    //         unsigned char green_value = image[pixel_index + 1];
+    //         unsigned char blue_value = image[pixel_index + 2];
 
-            int symbol_index_value = calculate_symbol_index(brightness_returned);
+    //         int brightness_returned = calculate_brightness(red_value, green_value, blue_value); // This is function call. I am using the function I decleared earlier
+    //         // printf("Brightness : %d \n",brightness_returned); I printed it only for checking
 
-            // printf("Symbol_index_value = %d\n",symbol_index_value); 
+    //         int symbol_index_value = calculate_symbol_index(brightness_returned);
 
-            printf("%c",ascii_symbols[symbol_index_value]);
-        }
-        printf("\n");
-    }
+    //         // printf("Symbol_index_value = %d\n",symbol_index_value);
+
+    //         printf("%c",ascii_symbols[symbol_index_value]);
+    //     }
+    //     printf("\n");
+    // }
     return 0;
 }
