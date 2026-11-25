@@ -6,6 +6,7 @@
 int calculate_brightness(int, int, int); // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
 int calculate_symbol_index(int);         // This is another function decleration
 int greet_01(void);
+int greet_02(void);
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -21,24 +22,50 @@ int calculate_symbol_index(int brightness)
     return symbol_index_value;
 }
 
+// I am making this function to instruct use on how to use my program (this one function especially is only for prinitng hello though)
 int greet_01(void)
 {
-    
+
     initscr(); // initscr function modifies the terminal making it ready for getch (and maybe other fucntions which the ncurses library might provide) through external library
 
-    printw("Hello!\n"); // This is abit annoying but the ncurses library uses printw function instead of printf , I tried using initilizing and endinf the its use only in getch , but the terminal output was getting abit weird and was recommended to use it this way. 
+    printw("Hello!\n"); // This is abit annoying but the ncurses library uses printw function instead of printf , I tried using initilizing and endinf the its use only in getch , but the terminal output was getting abit weird and was recommended to use it this way.
     printw("\n");
-    printw("Press enter to continue...");
+    printw("Press ESC to exit the program.\n");
+    printw("Press ENTER to continue...");
+
     refresh();
 
     int user_key = getch();
-    
+
+    clear(); // clearing the screen
+
+    refresh(); // refreshing the terminal
+
     endwin(); // endwin is a function from ncurses which just resets the terminal to its normal state
-    
-    // printf("You Pressed %d .\n", user_key);
+
+    printf("You Pressed %d .\n", user_key);
 
     return user_key;
+}
 
+// Another function to continue the instruction
+int greet_02(void)
+{
+
+    initscr();
+
+    printw("I will tell you how to use this Image to ASCII converter. Ready ?\n\n");
+
+    printw("Press backspace to go back...\n");
+    printw("Press enter to continue...");
+
+    refresh();
+
+    int user_key = getch();
+
+    endwin();
+
+    return user_key;
 }
 
 int main()
@@ -48,10 +75,23 @@ int main()
     int original_height;
     int original_channel;
     int required_channel = 3;
+    int user_key_returned;
 
     const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
-    greet_01();
+    while (user_key_returned != 27)
+    {
+        user_key_returned = greet_01();
+        if (user_key_returned == 10)
+        {
+            user_key_returned = greet_02();
+        }
+        else if (user_key_returned == 27)
+        {
+            break;
+        }
+        break;
+    }
 
     // unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
 
@@ -94,5 +134,6 @@ int main()
     //     }
     //     printf("\n");
     // }
+    printf("\nProgram as reached its end.\n");
     return 0;
 }
