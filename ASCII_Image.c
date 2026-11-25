@@ -74,10 +74,12 @@ int check_image_validity(unsigned char *image)
 {
     if (image == NULL)
     {
+        printf("Error loading image . Reason : %s.\n", stbi_failure_reason());
         return 1;
     }
     else
     {
+        printf("Image loaded successfully.\n");
         return 0;
     }
 }
@@ -115,14 +117,18 @@ int main()
 
     int image_validation_return_value = check_image_validity(image); // calling the function
 
-    if (image_validation_return_value == 1){
-        printf("Error loading image . Reason : %s ",stbi_failure_reason());
-    }else{
-        printf("Image was loaded successfully.\n");
+    // I am writing the following check of the return value just to close the program instantly ,incase if the image provided by the user is invalid in someway.
+    if (image_validation_return_value == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        
     }
 
-        // Now we calculate select the pixel position form the image
-        int pixel_index;
+    // Now we calculate select the pixel position form the image
+    int pixel_index;
     int original_row;
     int original_column;
 
