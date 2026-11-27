@@ -2,8 +2,8 @@
 #include "stb_image.h"           // Including the header file we downloaded
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 #include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
-#include <dirent.h> // I am including this library as read the current directory and also scan the images file in the directory (it might make the user experience better and i also might learn something new.)
-#include <string.h> // I am including this library because I have to work with strings especially in displaying the images name.
+#include <dirent.h>              // I am including this library as read the current directory and also scan the images file in the directory (it might make the user experience better and i also might learn something new.)
+#include <string.h>              // I am including this library because I have to work with strings especially in displaying the images name.
 
 int calculate_brightness(int, int, int);                                  // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
 int calculate_symbol_index(int);                                          // This is another function decleration
@@ -13,6 +13,7 @@ int greet_03(void);                                                       // I a
 int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
 void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
 int choose_image(void);                                                   // I am declaring this function to make a choose image sort of screen
+int show_images(char[][], int); // I am declearing this function to display all the names as the greet_03 function has become abit too big ig
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -78,11 +79,19 @@ int greet_02(void)
     return user_key;
 }
 
+// A function to show the images
+
+int show_images(char images_name[][100], int image_counter){
+
+}
+
 // Another function to continue the instruction
 int greet_03(void)
 {
 
     char image_names[500][100]; // I guess accepting 500 images should be enough and i dont think images name will be any higher then 200 characters (hopefully)
+    int image_counter = 0;
+
     initscr();
 
     clear();
@@ -98,24 +107,44 @@ int greet_03(void)
     DIR *directory = opendir("./Images");
 
     // Then we check if the directory is successfully opened or not
-    if(directory == NULL){
+    if (directory == NULL)
+    {
         printw("Error opening directory.\n");
         return 1;
-    }else{
+    }
+    else
+    {
         printw("Opened Directory Successfully.\n");
     }
 
     // dirent is a pre-made structure provided by the dirent library
     struct dirent *entries;
+    int i = 0;
 
     // Now we put the values in entries from the directory
-    while((entries = readdir(directory)) != NULL){ // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
-        int i = 0;
-        char *extension = strrchr((entries->d_name),'.'); // strrchr here search the last . and stores it in extension variable
-        if((strcmp(extension,".jpg") == 0) || (strcmp(extension,".jpeg")) || (strcmp(extension,".png")) || (strcmp(extension,".tga")) || (strcmp(extension,".bmp")) || (strcmp(extension,".psd")) || (strcmp(extension,".gif")) || (strcmp(extension,".hdr")) || (strcmp(extension, ".pic")) || (strcmp(extension, ".ppm")) || (strcmp(extension,".pgm"))){
-            strcpy(image_names[i],entries->d_name);
+    while ((entries = readdir(directory)) != NULL)
+    { // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
+        char *extension = strrchr((entries->d_name), '.'); // strrchr here search the last . and stores it in extension variable
+        if ((strcmp(extension, ".jpg") == 0) || (strcmp(extension, ".jpeg") == 0) || (strcmp(extension, ".png") == 0) || (strcmp(extension, ".tga") == 0) || (strcmp(extension, ".bmp") == 0) || (strcmp(extension, ".psd") == 0) || (strcmp(extension, ".gif") == 0) || (strcmp(extension, ".hdr") == 0) || (strcmp(extension, ".pic") == 0) || (strcmp(extension, ".ppm") == 0) || (strcmp(extension, ".pgm") == 0))
+        {
+            strcpy(image_names[i], entries->d_name); // If the file has image extension, we store it in another variable
+            image_counter++; // I am just counting the image , it will come handy later while printing them
+            i++;
         }
     }
+    printw("Number of images = %d .\n",image_counter);
+
+    show_images(image_names);
+
+    // int selected_image = 0;
+
+    // for(int i = 0; i < image_counter; i++){
+    //     if(i == selected_image){
+    //         printw("> %s\n",image_names[i]);
+    //     }else{
+    //         printw("%s\n",image_names[i]);
+    //     }
+    // }
 
     printw("\n");
 
@@ -254,7 +283,8 @@ int main()
         {
             user_key_returned = greet_03();
 
-            if(user_key_returned == 1){
+            if (user_key_returned == 1)
+            {
                 return 1;
             }
 
