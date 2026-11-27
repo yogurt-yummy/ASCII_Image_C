@@ -82,6 +82,7 @@ int greet_02(void)
 int greet_03(void)
 {
 
+    char image_names[500][100]; // I guess accepting 500 images should be enough and i dont think images name will be any higher then 200 characters (hopefully)
     initscr();
 
     clear();
@@ -108,8 +109,12 @@ int greet_03(void)
     struct dirent *entries;
 
     // Now we put the values in entries from the directory
-    while((entries = readdir(directory)) != NULL){
-        
+    while((entries = readdir(directory)) != NULL){ // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
+        int i = 0;
+        char *extension = strrchr((entries->d_name),'.'); // strrchr here search the last . and stores it in extension variable
+        if((strcmp(extension,".jpg") == 0) || (strcmp(extension,".jpeg")) || (strcmp(extension,".png")) || (strcmp(extension,".tga")) || (strcmp(extension,".bmp")) || (strcmp(extension,".psd")) || (strcmp(extension,".gif")) || (strcmp(extension,".hdr")) || (strcmp(extension, ".pic")) || (strcmp(extension, ".ppm")) || (strcmp(extension,".pgm"))){
+            strcpy(image_names[i],entries->d_name);
+        }
     }
 
     printw("\n");
