@@ -3,6 +3,7 @@
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 #include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
 #include <dirent.h> // I am including this library as read the current directory and also scan the images file in the directory (it might make the user experience better and i also might learn something new.)
+#include <string.h> // I am including this library because I have to work with strings especially in displaying the images name.
 
 int calculate_brightness(int, int, int);                                  // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
 int calculate_symbol_index(int);                                          // This is another function decleration
@@ -85,14 +86,31 @@ int greet_03(void)
 
     clear();
 
-    printw("Ok, so first you will see the following options (I will write the option in the box below)\n");
+    printw("Ok, so first you will have to choose which image you want to convert to ASCII : \n");
+    printw("There will be few samples , but you can always put it inside the Images folder and compile this porgram to convert that image to ASCII art : ");
 
     printw("\n");
 
-    printw("||=================================================================================||\n");
-    printw("||                            1. Per Pixel Mapping                                 ||\n");
-    printw("||                            2. Pixel Skipping                                    ||\n");
-    printw("||=================================================================================||\n");
+    printw("Choose any images :\n");
+
+    // First we open the directory
+    DIR *directory = opendir("./Images");
+
+    // Then we check if the directory is successfully opened or not
+    if(directory == NULL){
+        printw("Error opening directory.\n");
+        return 1;
+    }else{
+        printw("Opened Directory Successfully.\n");
+    }
+
+    // dirent is a pre-made structure provided by the dirent library
+    struct dirent *entries;
+
+    // Now we put the values in entries from the directory
+    while((entries = readdir(directory)) != NULL){
+        
+    }
 
     printw("\n");
 
@@ -230,6 +248,10 @@ int main()
         case 3:
         {
             user_key_returned = greet_03();
+
+            if(user_key_returned == 1){
+                return 1;
+            }
 
             if (user_key_returned == 10)
             {
