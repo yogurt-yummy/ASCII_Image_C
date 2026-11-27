@@ -10,6 +10,7 @@ int greet_02(void);                                                       // I a
 int greet_03(void);                                                       // I am declaring this function for instructions
 int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
 void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
+int choose_image(void);                                                   // I am declaring this function to make a choose image sort of screen
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -31,6 +32,8 @@ int greet_01(void)
 
     initscr(); // initscr function modifies the terminal making it ready for getch (and maybe other fucntions which the ncurses library might provide) through external library
 
+    clear();
+
     printw("Hello!\n"); // This is abit annoying but the ncurses library uses printw function instead of printf , I tried using initilizing and endinf the its use only in getch , but the terminal output was getting abit weird and was recommended to use it this way.
     printw("\n");
     printw("Press ESC to exit the program.\n");
@@ -46,7 +49,7 @@ int greet_01(void)
 
     endwin(); // endwin is a function from ncurses which just resets the terminal to its normal state
 
-    printf("You Pressed %d .\n", user_key);
+    // printf("You Pressed %d .\n", user_key);
 
     return user_key;
 }
@@ -56,6 +59,8 @@ int greet_02(void)
 {
 
     initscr();
+
+    clear();
 
     printw("I will tell you how to use this Image to ASCII converter. Ready ?\n\n");
 
@@ -77,6 +82,8 @@ int greet_03(void)
 
     initscr();
 
+    clear();
+
     printw("Ok, so first you will see the following options (I will write the option in the box below)\n");
 
     printw("\n");
@@ -90,6 +97,31 @@ int greet_03(void)
 
     printw("Press BACKSPACE to go back...\n");
     printw("Press ENTER to continue...");
+
+    refresh();
+
+    int user_key = getch();
+
+    endwin();
+
+    return user_key;
+}
+
+// I am making the below function to make a choose image sort of screen. My plan is to show a list of images on the screen which user can navigate and choose using the arrow key.
+int choose_image(void)
+{
+
+    int user_choosen_image_number;
+
+    initscr();
+
+    clear();
+
+    printw("Choose any image from the directory : \n");
+
+    endwin();
+
+    return user_choosen_image_number;
 }
 
 // I am making this function to check the validity of the image choosen by the user
@@ -154,59 +186,65 @@ int main()
 
     const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
-    switch (current_function)
+    while (1)
     {
-    case 1:
-    {
-        user_key_returned = greet_01();
-        if (user_key_returned == 10)
+        switch (current_function)
         {
-            current_function++; // Going to to the next function
-        }
-        else if (user_key_returned == 127)
+        case 1:
         {
-            current_function--; // Going back to the previous function
+            user_key_returned = greet_01();
+
+            if (user_key_returned == 10)
+            {
+                current_function++; // Going to to the next function
+            }
+            else if (user_key_returned == 127)
+            {
+                return 1; // Going back to the previous function
+            }
+            else if (user_key_returned == 27)
+            {
+                return 1; // For the force exit
+            }
+            break;
         }
-        else if (user_key_returned == 27)
+        case 2:
         {
-            return 1; // For the force exit
+            user_key_returned = greet_02();
+
+            if (user_key_returned == 10)
+            {
+                current_function++;
+            }
+            else if (user_key_returned == 127)
+            {
+                current_function--;
+            }
+            else if (user_key_returned == 27)
+            {
+                return 1;
+            }
+            break;
         }
-        break;
-    }
-    case 2:
-    {
-        user_key_returned = greet_02();
-        if (user_key_returned == 10)
+        case 3:
         {
-            current_function++;
+            int user_key_returned = greet_03();
+
+            if (user_key_returned == 10)
+            {
+                choose_image();
+            }
+            else if (user_key_returned == 127)
+            {
+                current_function--;
+            }
+            else if (user_key_returned == 27)
+            {
+                return 1;
+            }
+            break;
         }
-        else if (user_key_returned == 127)
-        {
-            current_function--;
         }
-        else if (user_key_returned == 27)
-        {
-            return 1;
-        }
-        break;
-    }
-    case 3:
-    {
-        greet_03();
-        if (user_key_returned == 10)
-        {
-            current_function++;
-        }
-        else if (user_key_returned == 127)
-        {
-            current_function--;
-        }
-        else if (user_key_returned == 27)
-        {
-            return 1;
-        }
-        break;
-    }
     }
 
     unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
