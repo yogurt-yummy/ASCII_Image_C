@@ -7,6 +7,7 @@ int calculate_brightness(int, int, int);                                  // Thi
 int calculate_symbol_index(int);                                          // This is another function decleration
 int greet_01(void);                                                       // I am declaring this funciton for instruction / greeting
 int greet_02(void);                                                       // I am declaring this function for instruction / greeting
+int greet_03(void);                                                       // I am declaring this function for instructions
 int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
 void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
 
@@ -58,8 +59,8 @@ int greet_02(void)
 
     printw("I will tell you how to use this Image to ASCII converter. Ready ?\n\n");
 
-    printw("Press backspace to go back...\n");
-    printw("Press enter to continue...");
+    printw("Press BACKSPACE to go back...\n");
+    printw("Press ENTER to continue...");
 
     refresh();
 
@@ -68,6 +69,27 @@ int greet_02(void)
     endwin();
 
     return user_key;
+}
+
+// Another function to continue the instruction
+int greet_03(void)
+{
+
+    initscr();
+
+    printw("Ok, so first you will see the following options (I will write the option in the box below)\n");
+
+    printw("\n");
+
+    printw("||=================================================================================||\n");
+    printw("||                            1. Per Pixel Mapping                                 ||\n");
+    printw("||                            2. Pixel Skipping                                    ||\n");
+    printw("||=================================================================================||\n");
+
+    printw("\n");
+
+    printw("Press BACKSPACE to go back...\n");
+    printw("Press ENTER to continue...");
 }
 
 // I am making this function to check the validity of the image choosen by the user
@@ -128,22 +150,64 @@ int main()
     int original_channel;
     int required_channel = 3;
     int user_key_returned;
+    int current_function = 1;
 
     const char ascii_symbols[] = " .:-=+*#%&"; // These are the symbols in sequence , which we will be ploting , by using the brightness value
 
-    // while (user_key_returned != 27)
-    // {
-    //     user_key_returned = greet_01();
-    //     if (user_key_returned == 10)
-    //     {
-    //         user_key_returned = greet_02();
-    //     }
-    //     else if (user_key_returned == 27)
-    //     {
-    //         break;
-    //     }
-    //     break;
-    // }
+    switch (current_function)
+    {
+    case 1:
+    {
+        user_key_returned = greet_01();
+        if (user_key_returned == 10)
+        {
+            current_function++; // Going to to the next function
+        }
+        else if (user_key_returned == 127)
+        {
+            current_function--; // Going back to the previous function
+        }
+        else if (user_key_returned == 27)
+        {
+            return 1; // For the force exit
+        }
+        break;
+    }
+    case 2:
+    {
+        user_key_returned = greet_02();
+        if (user_key_returned == 10)
+        {
+            current_function++;
+        }
+        else if (user_key_returned == 127)
+        {
+            current_function--;
+        }
+        else if (user_key_returned == 27)
+        {
+            return 1;
+        }
+        break;
+    }
+    case 3:
+    {
+        greet_03();
+        if (user_key_returned == 10)
+        {
+            current_function++;
+        }
+        else if (user_key_returned == 127)
+        {
+            current_function--;
+        }
+        else if (user_key_returned == 27)
+        {
+            return 1;
+        }
+        break;
+    }
+    }
 
     unsigned char *image = stbi_load(image_name, &original_width, &original_height, &original_channel, required_channel); // stbi_load is a function provided by stb_image header file . Also i m trying to match the syntax with similar sort of varible name so that i could memoize it
 
