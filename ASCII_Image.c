@@ -2,6 +2,7 @@
 #include "stb_image.h"           // Including the header file we downloaded
 #include <stdio.h>               // Including the standard input output library so that we could use functions like printf , scanf and more
 #include <ncurses.h>             // I am including this library(external) to use getch() especially . (just wanted to make someting like navigation through a sort of story) btw it takes over the terminal to use its own function , dont know why but it sound scary
+#include <dirent.h> // I am including this library as read the current directory and also scan the images file in the directory (it might make the user experience better and i also might learn something new.)
 
 int calculate_brightness(int, int, int);                                  // This is function decleration and I am writing this to declare that this to tell me program that this funciton exists.
 int calculate_symbol_index(int);                                          // This is another function decleration
@@ -228,7 +229,7 @@ int main()
         }
         case 3:
         {
-            int user_key_returned = greet_03();
+            user_key_returned = greet_03();
 
             if (user_key_returned == 10)
             {
