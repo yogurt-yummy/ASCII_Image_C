@@ -12,8 +12,8 @@ int greet_02(void);                                                       // I a
 int greet_03(void);                                                       // I am declaring this function for instructions
 int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
 void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
-int choose_image(void);                                                   // I am declaring this function to make a choose image sort of screen
-int show_images(char[500][100], int);                                     // I am declearing this function to display all the names as the greet_03 function has become abit too big ig
+// int choose_image(void);                                                   // I am declaring this function to make a choose image sort of screen
+int show_images(void); // I am declearing this function to display all the names as the greet_03 function has become abit too big ig
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -79,73 +79,23 @@ int greet_02(void)
     return user_key;
 }
 
-// A function to show the images
+// A function to show and choose the image
 
-int show_images(char images_name[500][100], int image_counter)
+int show_images(void)
 {
     initscr();
     keypad(stdscr, TRUE); // I leanrt that this is required in order to enable the readings of arrow keys which we will be using later on
     int selected_image = 0;
     int user_key = 0001; // I am writing just a random number here , As soon as the user press any key , it will be changed , so not a big issue keeping it 0001 ig
 
-    printw("||========================================================================================||\n");
-    printw("||                                   Choose one Image                                     ||\n");
-    printw("||========================================================================================||\n");
+    int user_choosen_image_number;
 
-    while (user_key != 27)
-    {
-        clear();
-        for (int i = 0; i < image_counter; i++)
-        {
-            if (selected_image == i)
-            {
-                printw(" >%s\n", images_name[i]);
-            }
-            else
-            {
-                printw("%s\n", images_name[i]);
-            }
-        }
-        refresh();
-        user_key = getch();
-        if (user_key == KEY_DOWN)
-        {
-            selected_image++;
-            if(selected_image >= image_counter){
-                selected_image = 0;
-            }
-        }
-        else if (user_key == KEY_UP)
-        {
-            selected_image--;
-            if(selected_image < 0){
-                selected_image = (image_counter - 1);
-            }
-        }
-        if(user_key == KEY_ENTER){
-            break;
-        }
-    }
-
-    endwin();
-    return selected_image;
-}
-
-// Another function to continue the instruction
-int greet_03(void)
-{
-
-    char image_names[500][100]; // I guess accepting 500 images should be enough and i dont think images name will be any higher then 200 characters (hopefully)
+    char image_names[500][100];
     int image_counter = 0;
-
-    initscr();
 
     clear();
 
-    printw("Ok, so first you will have to choose which image you want to convert to ASCII : \n");
-    printw("There will be few samples , but you can always put it inside the Images folder and compile this porgram to convert that image to ASCII art : ");
-
-    printw("\n");
+    printw("Choose any image from the directory : \n");
 
     printw("Choose any images :\n");
 
@@ -180,12 +130,67 @@ int greet_03(void)
     }
     printw("Number of images = %d .\n", image_counter);
 
-    show_images(image_names, image_counter);
+    printw("||========================================================================================||\n");
+    printw("||                                   Choose one Image                                     ||\n");
+    printw("||========================================================================================||\n");
+
+    while (user_key != 27)
+    {
+        clear();
+        for (int i = 0; i < image_counter; i++)
+        {
+            if (selected_image == i)
+            {
+                printw(" >%s\n", image_names[i]);
+            }
+            else
+            {
+                printw("%s\n", image_names[i]);
+            }
+        }
+        refresh();
+        user_key = getch();
+        if (user_key == KEY_DOWN)
+        {
+            selected_image++;
+            if (selected_image >= image_counter)
+            {
+                selected_image = 0;
+            }
+        }
+        else if (user_key == KEY_UP)
+        {
+            selected_image--;
+            if (selected_image < 0)
+            {
+                selected_image = (image_counter - 1);
+            }
+        }
+        if (user_key == KEY_ENTER)
+        {
+            break;
+        }
+    }
+
+    endwin();
+    return selected_image;
+}
+
+// Another function to continue the instruction
+int greet_03(void)
+{
+
+    char image_names[500][100]; // I guess accepting 500 images should be enough and i dont think images name will be any higher then 200 characters (hopefully)
+    int image_counter = 0;
+
+    initscr();
+
+    clear();
+
+    printw("Ok, so first you will have to choose which image you want to convert to ASCII : \n");
+    printw("There will be few samples , but you can always put it inside the Images folder and compile this porgram to convert that image to ASCII art : ");
 
     printw("\n");
-
-    printw("Press BACKSPACE to go back...\n");
-    printw("Press ENTER to continue...");
 
     refresh();
 
@@ -197,21 +202,61 @@ int greet_03(void)
 }
 
 // I am making the below function to make a choose image sort of screen. My plan is to show a list of images on the screen which user can navigate and choose using the arrow key.
-int choose_image(void)
-{
+// int choose_image(void)
+// {
 
-    int user_choosen_image_number;
+//     int user_choosen_image_number;
 
-    initscr();
+//     initscr();
 
-    clear();
+//     clear();
 
-    printw("Choose any image from the directory : \n");
+//     printw("Choose any image from the directory : \n");
 
-    endwin();
+//         printw("Choose any images :\n");
 
-    return user_choosen_image_number;
-}
+//     // First we open the directory
+//     DIR *directory = opendir("./Images");
+
+//     // Then we check if the directory is successfully opened or not
+//     if (directory == NULL)
+//     {
+//         printw("Error opening directory.\n");
+//         return 1;
+//     }
+//     else
+//     {
+//         printw("Opened Directory Successfully.\n");
+//     }
+
+//     // dirent is a pre-made structure provided by the dirent library
+//     struct dirent *entries;
+//     int i = 0;
+
+//     // Now we put the values in entries from the directory
+//     while ((entries = readdir(directory)) != NULL)
+//     {                                                      // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
+//         char *extension = strrchr((entries->d_name), '.'); // strrchr here search the last . and stores it in extension variable
+//         if ((strcmp(extension, ".jpg") == 0) || (strcmp(extension, ".jpeg") == 0) || (strcmp(extension, ".png") == 0) || (strcmp(extension, ".tga") == 0) || (strcmp(extension, ".bmp") == 0) || (strcmp(extension, ".psd") == 0) || (strcmp(extension, ".gif") == 0) || (strcmp(extension, ".hdr") == 0) || (strcmp(extension, ".pic") == 0) || (strcmp(extension, ".ppm") == 0) || (strcmp(extension, ".pgm") == 0))
+//         {
+//             strcpy(image_names[i], entries->d_name); // If the file has image extension, we store it in another variable
+//             image_counter++;                         // I am just counting the image , it will come handy later while printing them
+//             i++;
+//         }
+//     }
+//     printw("Number of images = %d .\n", image_counter);
+
+//     show_images(image_names, image_counter);
+
+//     printw("\n");
+
+//     printw("Press BACKSPACE to go back...\n");
+//     printw("Press ENTER to continue...");
+
+//     endwin();
+
+//     return user_choosen_image_number;
+// }
 
 // I am making this function to check the validity of the image choosen by the user
 int check_image_validity(unsigned char *image)
@@ -326,7 +371,7 @@ int main()
 
             if (user_key_returned == 10)
             {
-                choose_image();
+                show_images();
             }
             else if (user_key_returned == 127)
             {
