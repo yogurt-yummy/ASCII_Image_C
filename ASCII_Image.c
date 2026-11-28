@@ -13,7 +13,7 @@ int greet_03(void);                                                       // I a
 int check_image_validity(unsigned char *);                                // I am declaring this function for check if the image exist or not , or if its valid type or not
 void per_pixel_mapping(int, int, int, unsigned char *, const char arr[]); // I am declaring this function for converting image to ascii using certain method of conversion called per_pixel_mapping
 int choose_image(void);                                                   // I am declaring this function to make a choose image sort of screen
-int show_images(char[][], int); // I am declearing this function to display all the names as the greet_03 function has become abit too big ig
+int show_images(char[500][100], int);                                     // I am declearing this function to display all the names as the greet_03 function has become abit too big ig
 
 // The below is function definition . Here I write the actual code of the function , like what it does and stuff
 int calculate_brightness(int red_value, int green_value, int blue_value)
@@ -81,8 +81,54 @@ int greet_02(void)
 
 // A function to show the images
 
-int show_images(char images_name[][100], int image_counter){
+int show_images(char images_name[500][100], int image_counter)
+{
+    initscr();
+    keypad(stdscr, TRUE); // I leanrt that this is required in order to enable the readings of arrow keys which we will be using later on
+    int selected_image = 0;
+    int user_key = 0001; // I am writing just a random number here , As soon as the user press any key , it will be changed , so not a big issue keeping it 0001 ig
 
+    printw("||========================================================================================||\n");
+    printw("||                                   Choose one Image                                     ||\n");
+    printw("||========================================================================================||\n");
+
+    while (user_key != 27)
+    {
+        clear();
+        for (int i = 0; i < image_counter; i++)
+        {
+            if (selected_image == i)
+            {
+                printw(" >%s\n", images_name[i]);
+            }
+            else
+            {
+                printw("%s\n", images_name[i]);
+            }
+        }
+        refresh();
+        user_key = getch();
+        if (user_key == KEY_DOWN)
+        {
+            selected_image++;
+            if(selected_image >= image_counter){
+                selected_image = 0;
+            }
+        }
+        else if (user_key == KEY_UP)
+        {
+            selected_image--;
+            if(selected_image < 0){
+                selected_image = (image_counter - 1);
+            }
+        }
+        if(user_key == KEY_ENTER){
+            break;
+        }
+    }
+
+    endwin();
+    return selected_image;
 }
 
 // Another function to continue the instruction
@@ -123,28 +169,18 @@ int greet_03(void)
 
     // Now we put the values in entries from the directory
     while ((entries = readdir(directory)) != NULL)
-    { // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
+    {                                                      // It checks the directory untill it reaches end (readdir returns NULL when it reaches the end)
         char *extension = strrchr((entries->d_name), '.'); // strrchr here search the last . and stores it in extension variable
         if ((strcmp(extension, ".jpg") == 0) || (strcmp(extension, ".jpeg") == 0) || (strcmp(extension, ".png") == 0) || (strcmp(extension, ".tga") == 0) || (strcmp(extension, ".bmp") == 0) || (strcmp(extension, ".psd") == 0) || (strcmp(extension, ".gif") == 0) || (strcmp(extension, ".hdr") == 0) || (strcmp(extension, ".pic") == 0) || (strcmp(extension, ".ppm") == 0) || (strcmp(extension, ".pgm") == 0))
         {
             strcpy(image_names[i], entries->d_name); // If the file has image extension, we store it in another variable
-            image_counter++; // I am just counting the image , it will come handy later while printing them
+            image_counter++;                         // I am just counting the image , it will come handy later while printing them
             i++;
         }
     }
-    printw("Number of images = %d .\n",image_counter);
+    printw("Number of images = %d .\n", image_counter);
 
-    show_images(image_names);
-
-    // int selected_image = 0;
-
-    // for(int i = 0; i < image_counter; i++){
-    //     if(i == selected_image){
-    //         printw("> %s\n",image_names[i]);
-    //     }else{
-    //         printw("%s\n",image_names[i]);
-    //     }
-    // }
+    show_images(image_names, image_counter);
 
     printw("\n");
 
